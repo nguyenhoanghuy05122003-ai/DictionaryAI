@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Engdaily – Từ điển AI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+  --bg:#f3fbea;--card:#fff;--ink:#3c3c3c;--mute:#8b8b8b;--line:#e5e5e5;
+  --green:#58cc02;--green-d:#46a302;--blue:#1cb0f6;--blue-d:#1899d6;
+  --n:#1cb0f6;--v:#ff4b4b;--adj:#58cc02;--adv:#ff9600;
+  --chip:#f1f7ff;--shadow:#d9d9d9;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#131f24;--card:#1f2c33;--ink:#eaf2f5;--mute:#8fa3ad;--line:#37464f;--chip:#26363f;--shadow:#0e171b;}}
+:root[data-theme="dark"]{--bg:#131f24;--card:#1f2c33;--ink:#eaf2f5;--mute:#8fa3ad;--line:#37464f;--chip:#26363f;--shadow:#0e171b;}
+*{box-sizing:border-box}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:'Baloo 2',ui-rounded,'Nunito','Segoe UI',system-ui,sans-serif;font-weight:500;font-size:17px;line-height:1.35}
+.wrap{max-width:720px;margin:0 auto;padding:18px 16px 60px}
+header{text-align:center;padding:10px 0 18px}
+.logo{display:inline-flex;align-items:center;gap:10px}
+.mascot{width:54px;height:54px;border-radius:18px;background:var(--green);box-shadow:0 4px 0 var(--green-d);display:grid;place-items:center;font-size:30px;transform:rotate(-6deg)}
+h1{margin:0;font-size:44px;font-weight:800;color:var(--green);letter-spacing:-.5px}
+h1 span{color:var(--blue)}
+.teacher{margin-top:-6px;font-size:13px;color:var(--mute);font-weight:500}
+.tag{margin:8px 0 0;color:var(--mute);font-size:16px}
+.search{background:var(--card);border:2px solid var(--line);border-bottom-width:5px;border-radius:22px;padding:14px;display:grid;gap:10px}
+.row{display:flex;gap:10px}
+input{font:inherit;width:100%;border:2px solid var(--line);background:var(--bg);color:var(--ink);border-radius:16px;padding:10px 14px;outline:none}
+input:focus{border-color:var(--blue)}
+#q{font-size:22px;font-weight:700}
+button{font:inherit;font-weight:800;cursor:pointer;border:0;border-radius:16px;padding:10px 20px;color:#fff;background:var(--green);box-shadow:0 4px 0 var(--green-d);text-transform:uppercase;letter-spacing:.4px;white-space:nowrap}
+button:active{transform:translateY(3px);box-shadow:0 1px 0 var(--green-d)}
+button:disabled{opacity:.6;cursor:wait}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin:12px 2px 4px}
+.chip{background:var(--card);border:2px solid var(--line);border-bottom-width:4px;border-radius:14px;padding:3px 12px;font-weight:700;font-size:15px;color:var(--blue);cursor:pointer;text-transform:none;letter-spacing:0;box-shadow:none}
+.chip:active{transform:none;box-shadow:none}
+.card{background:var(--card);border:2px solid var(--line);border-bottom-width:5px;border-radius:22px;padding:18px;margin-top:16px}
+.card h2{margin:0 0 10px;font-size:20px;font-weight:800;display:flex;align-items:center;gap:8px}
+.hero{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.word{font-size:40px;font-weight:800;line-height:1}
+.ipa{font-size:20px;color:var(--mute);font-weight:600}
+.spk{width:46px;height:46px;padding:0;border-radius:50%;background:var(--blue);box-shadow:0 4px 0 var(--blue-d);font-size:22px;text-transform:none}
+.pos{display:flex;gap:10px;align-items:flex-start;margin-top:12px}
+.badge{flex:none;min-width:48px;text-align:center;color:#fff;font-weight:800;border-radius:12px;padding:2px 10px;font-size:15px}
+.N{background:var(--n)}.V{background:var(--v)}.Adj{background:var(--adj)}.Adv{background:var(--adv)}
+.vi{color:var(--mute);font-size:15px}
+.item{border-left:5px solid var(--blue);background:var(--chip);border-radius:6px 14px 14px 6px;padding:8px 12px;margin-top:8px}
+.item.col{border-color:var(--adv)}
+.item.ctx{border-color:var(--green)}
+.item b{font-weight:800}
+.ex{font-size:16px}
+.ex em{font-style:normal;font-weight:800;color:var(--green-d)}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:560px){.two{grid-template-columns:1fr}.word{font-size:34px}h1{font-size:38px}.row.top{flex-direction:column}}
+.pill{display:inline-block;margin:4px 6px 0 0;padding:3px 14px;border-radius:999px;font-weight:700;border:2px solid;cursor:pointer;background:transparent;color:inherit;box-shadow:none;text-transform:none;letter-spacing:0;font-size:16px}
+.pill:active{transform:none;box-shadow:none}
+.syn{border-color:var(--adj);color:var(--green-d)}
+.ant{border-color:var(--v);color:var(--v)}
+.load,.err{text-align:center;color:var(--mute);padding:26px 10px}
+.ld{margin-top:16px;display:grid;gap:14px}
+.ldhead{display:flex;align-items:center;justify-content:center;gap:12px;background:var(--card);border:2px solid var(--line);border-bottom-width:5px;border-radius:22px;padding:14px 18px;font-weight:700}
+.dots{display:flex;gap:6px}
+.dots i{width:14px;height:14px;border-radius:50%;animation:b .6s infinite alternate}
+.dots i:nth-child(1){background:var(--blue)}.dots i:nth-child(2){background:var(--green);animation-delay:.15s}.dots i:nth-child(3){background:var(--adv);animation-delay:.3s}
+@keyframes b{to{transform:translateY(-9px);opacity:.6}}
+.sk{background:var(--card);border:2px solid var(--line);border-bottom-width:5px;border-radius:22px;padding:18px;display:grid;gap:10px}
+.sk i{display:block;height:16px;border-radius:8px;background:linear-gradient(90deg,var(--line) 25%,var(--chip) 50%,var(--line) 75%);background-size:200% 100%;animation:sh 1.2s linear infinite}
+.sk i:nth-child(1){width:45%;height:26px}.sk i:nth-child(2){width:90%}.sk i:nth-child(3){width:70%}
+@keyframes sh{to{background-position:-200% 0}}
+.err{color:var(--v)}
+.note{font-size:15px;color:var(--mute);margin-top:6px}
+.hide{display:none!important}
+.tabs{display:flex;gap:10px;margin-bottom:14px}
+.tab{flex:1;background:var(--card);color:var(--mute);border:2px solid var(--line);border-bottom-width:5px;box-shadow:none;text-transform:none;letter-spacing:0;font-size:18px}
+.tab.on{color:var(--blue);border-color:var(--blue)}
+.tab:active{transform:none;box-shadow:none}
+.day{background:var(--card);color:var(--ink);border:2px solid var(--line);border-bottom-width:4px;box-shadow:none;text-transform:none;letter-spacing:0;margin:4px 8px 4px 0;font-size:16px}
+.day.on{border-color:var(--green);color:var(--green-d)}
+.day:active{transform:none;box-shadow:none}
+.stage{display:inline-block;background:var(--adv);color:#fff;border-radius:12px;padding:1px 12px;font-weight:800;font-size:14px}
+.bar{height:14px;border-radius:8px;background:var(--line);overflow:hidden;margin:10px 0}
+.bar i{display:block;height:100%;background:var(--green);border-radius:8px;transition:width .3s}
+.def{font-size:22px;font-weight:700;line-height:1.3;margin:10px 0}
+.opts{display:grid;gap:10px;margin-top:12px}
+.opt{background:var(--card);color:var(--ink);border:2px solid var(--line);border-bottom-width:5px;box-shadow:none;text-transform:none;letter-spacing:0;font-size:21px;text-align:left;font-weight:700}
+.opt:active{transform:none;box-shadow:none}
+.opt.ok{background:#d7ffb8;border-color:var(--green);color:#2b6b00}
+.opt.bad{background:#ffdfe0;border-color:var(--v);color:#a02020}
+.big{font-size:44px;font-weight:800;color:var(--green)}
+.row2{display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:16px;cursor:pointer}
+.opt.sel{border-color:var(--blue);background:var(--chip)}
+.ol{width:30px;height:30px;border-radius:50%;background:var(--line);color:var(--ink);display:grid;place-items:center;font-size:15px;flex:none}
+.mini{width:42px;height:42px;padding:0;border-radius:50%;background:var(--blue);box-shadow:0 3px 0 var(--blue-d);font-size:18px;flex:none;text-transform:none}
+.ic{display:inline-flex;flex:none}.ic svg,.card h2 .i{width:26px;height:26px}
+.tab svg{width:22px;height:22px;vertical-align:-5px;margin-right:6px}
+.spk,.mini{display:inline-grid;place-items:center}.spk svg{width:26px;height:26px}.mini svg{width:22px;height:22px}
+.bigic svg{width:64px;height:64px}.bigic{display:block;margin:0 auto 6px}
+.wrap{max-width:860px}
+.hero{background:linear-gradient(135deg,#58cc02,#2fb344);color:#fff;border:0;border-bottom:6px solid var(--green-d);position:relative;overflow:hidden;padding:22px;row-gap:10px}
+.hero::after{content:"";position:absolute;right:-30px;top:-44px;width:160px;height:160px;border-radius:50%;background:rgba(255,255,255,.15)}
+.hero .ipa{color:rgba(255,255,255,.92)}
+.hero .spk{background:#fff;color:var(--blue);box-shadow:0 4px 0 rgba(0,0,0,.18);position:relative;z-index:1}
+.htags{display:flex;gap:8px;width:100%;flex-wrap:wrap}
+.htags span{background:#fff;border-radius:12px;padding:1px 14px;font-weight:800;font-size:14px}
+.htags .N{color:var(--n)}.htags .V{color:var(--v)}.htags .Adj{color:var(--green-d)}.htags .Adv{color:var(--adv)}
+.card h2{gap:10px;font-size:21px}
+.card h2 .ic{width:40px;height:40px;border-radius:13px;display:inline-grid;place-items:center;background:var(--chip)}
+.card h2 .ic svg{width:23px;height:23px}
+.pos{background:var(--chip);border-radius:16px;padding:10px 12px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.grid2 .item{margin:0;border:2px solid var(--line);border-bottom-width:4px;border-radius:16px;background:var(--chip);padding:10px 12px}
+.grid2 .item b{display:inline-block;background:var(--blue);color:#fff;border-radius:10px;padding:0 10px;margin-bottom:4px}
+.grid2 .item.col b{background:var(--adv)}
+@media(max-width:620px){.grid2{grid-template-columns:1fr}}
+#out>*{animation:up .35s both}
+#out>*:nth-child(2){animation-delay:.05s}#out>*:nth-child(3){animation-delay:.1s}#out>*:nth-child(4){animation-delay:.15s}#out>*:nth-child(5){animation-delay:.2s}
+@keyframes up{from{opacity:0;transform:translateY(10px)}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="logo"><h1>Eng<span>daily</span></h1></div>
+    <div class="teacher">Teacher: Nguyen Hoang Huy</div>
+    <p class="tag">Tra từ thông minh, hiểu nghĩa, nhớ lâu mỗi ngày!</p>
+  </header>
+
+  <div class="tabs"><button class="tab on" id="tabL"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l5 5"/></svg> Tra từ</button><button class="tab" id="tabR"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.2" fill="currentColor"/></svg> Ôn tập</button></div>
+  <div id="viewLookup">
+  <div class="search">
+    <div class="row top">
+      <input id="q" placeholder="Nhập từ tiếng Anh… ví dụ: depend" autocomplete="off" autocapitalize="off" spellcheck="false">
+      <button id="go">Tra từ</button>
+    </div>
+  </div>
+
+  <div id="out"></div>
+  </div>
+  <div id="viewReview" class="hide"></div>
+</div>
+
+<script>
+(function(){
+  var $=function(id){return document.getElementById(id)};
+  var out=$('out'),q=$('q'),ctx={value:''},go=$('go'),sample=null;
+
+  sample={json:function(prompt){return fetch('/api/lookup',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({prompt:prompt})}).then(function(r){if(!r.ok)throw new Error('api');return r.json()})}};
+
+  function el(tag,cls,text){var e=document.createElement(tag);if(cls)e.className=cls;if(text!=null)e.textContent=text;return e}
+  var ICONS={"search": "<svg class=\"i\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><circle cx=\"11\" cy=\"11\" r=\"6.5\"/><path d=\"M16 16l5 5\"/></svg>", "target": "<svg class=\"i\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><circle cx=\"12\" cy=\"12\" r=\"9\"/><circle cx=\"12\" cy=\"12\" r=\"5\"/><circle cx=\"12\" cy=\"12\" r=\"1.2\" fill=\"currentColor\"/></svg>", "speaker": "<svg class=\"i\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M4 10v4h3.5l5 4V6l-5 4z\" fill=\"currentColor\"/><path d=\"M16 9a4 4 0 010 6M18.8 6.5a8 8 0 010 11\"/></svg>", "book": "<svg class=\"i\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M12 6c-2-1.5-5-2-8-1.5v13c3-.5 6 0 8 1.5 2-1.5 5-2 8-1.5v-13C17 4 14 4.5 12 6z\"/><path d=\"M12 6v13\"/></svg>", "link": "<svg class=\"i\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M10 14a4 4 0 005.7 0l3-3a4 4 0 00-5.7-5.7l-1 1\"/><path d=\"M14 10a4 4 0 00-5.7 0l-3 3a4 4 0 005.7 5.7l1-1\"/></svg>", "grid": "<svg class=\"i\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><rect x=\"3.5\" y=\"3.5\" width=\"7\" height=\"7\" rx=\"2\"/><rect x=\"13.5\" y=\"3.5\" width=\"7\" height=\"7\" rx=\"2\"/><rect x=\"3.5\" y=\"13.5\" width=\"7\" height=\"7\" rx=\"2\"/><rect x=\"13.5\" y=\"13.5\" width=\"7\" height=\"7\" rx=\"2\"/></svg>", "check": "<svg class=\"i\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><circle cx=\"12\" cy=\"12\" r=\"9\"/><path d=\"M8 12.5l3 3 5-6\"/></svg>", "cross": "<svg class=\"i\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><circle cx=\"12\" cy=\"12\" r=\"9\"/><path d=\"M9 9l6 6M15 9l-6 6\"/></svg>", "calendar": "<svg class=\"i\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><rect x=\"3.5\" y=\"5\" width=\"17\" height=\"15\" rx=\"3\"/><path d=\"M3.5 10h17M8 3v4M16 3v4\"/></svg>", "eye": "<svg class=\"i\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12z\"/><circle cx=\"12\" cy=\"12\" r=\"3\"/></svg>", "ear": "<svg class=\"i\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M7 9a5 5 0 0110 0c0 3-3 3.5-3 6.5a2.5 2.5 0 01-5 0\"/><path d=\"M10 9a2 2 0 014 0\"/></svg>", "trophy": "<svg class=\"i\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M8 4h8v5a4 4 0 01-8 0z\"/><path d=\"M8 6H4v1a4 4 0 004 4M16 6h4v1a4 4 0 01-4 4M12 13v4M8.5 20h7M10 17h4\"/></svg>"},ICOL={"search": "--blue", "target": "--green", "speaker": "--blue", "book": "--blue", "link": "--adv", "grid": "--v", "check": "--green", "cross": "--v", "calendar": "--blue", "eye": "--blue", "ear": "--adv", "trophy": "--adv"};
+  function ic(n){var s=document.createElement('span');s.className='ic';s.style.color='var('+ICOL[n]+')';s.innerHTML=ICONS[n];return s}
+  function sbtn(cls){var b=document.createElement('button');b.className=cls;b.innerHTML=ICONS.speaker;return b}
+  function ttl(t){var h=document.createElement('h2'),p=t.split('|');if(p.length>1){h.appendChild(ic(p[0]));t=p[1]}h.appendChild(document.createTextNode(t));return h}
+
+  // Bold the target word inside an example sentence (safe, no innerHTML)
+  function hl(sentence,w){
+    var p=el('div','ex'),s=String(sentence||''),i=s.toLowerCase().indexOf(String(w||'').toLowerCase());
+    if(!w||i<0){p.textContent=s;return p}
+    p.appendChild(document.createTextNode(s.slice(0,i)));
+    p.appendChild(el('em',null,s.slice(i,i+w.length)));
+    p.appendChild(document.createTextNode(s.slice(i+w.length)));
+    return p;
+  }
+  function speak(t){
+    try{speechSynthesis.cancel();var u=new SpeechSynthesisUtterance(t);u.lang='en-US';u.rate=.9;speechSynthesis.speak(u)}catch(e){}
+  }
+  function card(title){var c=el('div','card');c.appendChild(ttl(title));out.appendChild(c);return c}
+  function exBlock(c,cls,head,en,vi,key){
+    var d=el('div','item '+cls);
+    var h=el('div');h.appendChild(el('b',null,head));d.appendChild(h);
+    d.appendChild(hl(en,key));
+    if(vi)d.appendChild(el('div','vi',vi));
+    c.appendChild(d);
+  }
+
+  function render(d){
+    out.textContent='';
+    var w=d.word||q.value;saveWord(d,w);
+    var c=el('div','card hero');
+    c.appendChild(el('div','word',w));
+    c.appendChild(el('div','ipa',d.ipa||''));
+    var sp=sbtn('spk');sp.title='Nghe phát âm';sp.onclick=function(){speak(w)};c.appendChild(sp);
+    out.appendChild(c);
+
+    var cm=card('book|Nghĩa & từ loại');
+    (d.pos||[]).forEach(function(p){
+      var tag=['N','V','Adj','Adv'].indexOf(p.tag)>=0?p.tag:'N';
+      var r=el('div','pos');r.appendChild(el('span','badge '+tag,tag));
+      var t=el('div');t.appendChild(el('div',null,p.meaning_en||''));t.appendChild(el('div','vi',p.meaning_vi||''));
+      r.appendChild(t);cm.appendChild(r);
+    });
+
+    if(d.context_examples&&d.context_examples.length){
+      var cx=card('target|Đặt câu theo ngữ cảnh'+(ctx.value.trim()?': '+ctx.value.trim():''));
+      d.context_examples.forEach(function(e){exBlock(cx,'ctx','',e.en,e.vi,w);cx.lastChild.firstChild.remove()});
+      if(d.context_note)cx.appendChild(el('div','note',d.context_note));
+    }
+
+    if(d.prepositions&&d.prepositions.length){
+      var pc=card('link|Giới từ đi kèm');
+      var g1=el('div','grid2');pc.appendChild(g1);
+      d.prepositions.forEach(function(p){exBlock(g1,'',p.phrase||(w+' '+p.prep),p.example_en,p.example_vi,p.prep?w:w)});
+    }
+    if(d.collocations&&d.collocations.length){
+      var cc=card('grid|Collocations');
+      var g2=el('div','grid2');cc.appendChild(g2);
+      d.collocations.forEach(function(p){exBlock(g2,'col',p.phrase,p.example_en,p.example_vi,w)});
+    }
+
+    var two=el('div','two');out.appendChild(two);
+    [['check|Từ đồng nghĩa',d.synonyms,'syn'],['cross|Từ trái nghĩa',d.antonyms,'ant']].forEach(function(a){
+      var c2=el('div','card');c2.appendChild(ttl(a[0]));
+      if(a[1]&&a[1].length){a[1].forEach(function(s){
+        var b=el('button','pill '+a[2],s);b.onclick=function(){q.value=s;search()};c2.appendChild(b);
+      })}else{c2.appendChild(el('div','vi','Không có từ phù hợp'))}
+      two.appendChild(c2);
+    });
+  }
+
+  function search(){
+    var word=q.value.trim();if(!word)return q.focus();
+    if(!sample){out.textContent='';out.appendChild(el('div','err','Tính năng AI chưa sẵn sàng. Hãy mở trang này trong claude.ai và cho phép AI nhé!'));return}
+    var context=ctx.value.trim();
+    out.textContent='';
+    var l=el('div','ld'),hd=el('div','ldhead'),dots=el('div','dots'),msg=el('span',null,'Đang tra “'+word+'”…');
+    dots.appendChild(el('i'));dots.appendChild(el('i'));dots.appendChild(el('i'));hd.appendChild(dots);hd.appendChild(msg);l.appendChild(hd);
+    for(var k=0;k<3;k++){var s=el('div','sk');s.appendChild(el('i'));s.appendChild(el('i'));s.appendChild(el('i'));l.appendChild(s)}
+    out.appendChild(l);
+    var steps=['Đang tra “'+word+'”…','Đang tìm nghĩa & từ loại…','Đang chọn ví dụ dễ nhớ…','Sắp xong rồi…'],si=0,tm=setInterval(function(){if(!l.isConnected){clearInterval(tm);return}si=Math.min(si+1,steps.length-1);msg.textContent=steps[si]},2200);
+    go.disabled=true;
+    var prompt='You are an English dictionary for Vietnamese school students. Look up the English word or phrase: "'+word+'".'
+      +(context?' The learner wants example sentences in this context: "'+context+'".':'')
+      +'\nReturn ONLY valid JSON, no markdown, with this exact shape:\n'
+      +'{"word":string,"ipa":"/.../ (US)","pos":[{"tag":"N|V|Adj|Adv","meaning_en":simple English definition,"meaning_vi":Vietnamese meaning}],'
+      +'"context_examples":[{"en":string,"vi":string}] (2 sentences fitting the context; empty array if no context given),"context_note":short Vietnamese usage tip or "",'
+      +'"prepositions":[{"phrase":"e.g. depend on","prep":"on","example_en":most memorable simple example,"example_vi":Vietnamese}] (empty array if the word takes no common preposition),'
+      +'"collocations":[{"phrase":string,"example_en":most memorable simple example,"example_vi":Vietnamese}] (3 to 5 common ones),'
+      +'"synonyms":[up to 5 words],"antonyms":[up to 5 words, empty if none]}\n'
+      +'Include only parts of speech the word really has (use tag N, V, Adj or Adv only). Keep examples short, friendly and easy for students. If the input is not a real English word, return {"error":"Vietnamese message"}.';
+    sample.json(prompt).then(function(d){
+      if(d&&d.error){out.textContent='';out.appendChild(el('div','err',d.error));return}
+      render(d);
+    }).catch(function(e){
+      out.textContent='';
+      out.appendChild(el('div','err',e&&e.code==='not_granted'?'Bạn cần cho phép AI để tra từ nhé!':'Oops, chưa tra được. Thử lại sau một chút nhé!'));
+    }).then(function(){go.disabled=false});
+  }
+
+  /* ===== Lưu từ & ôn tập ===== */
+  var DB=null,UID=null,LS='engdaily_words',view=$('viewReview');
+  var dbReady=(window.claude&&claude.use)?Promise.all([claude.use('db'),claude.use('user')]).then(function(r){
+    if(!r[0]||!r[1])return;return r[1].id().then(function(id){if(id){DB=r[0];UID=id}})}).catch(function(){}):Promise.resolve();
+  function col(){return DB.collection('data/users/'+UID)}
+  function lsGet(){try{return JSON.parse(localStorage.getItem(LS)||'[]')}catch(e){return []}}
+  function today(){var d=new Date(),p=function(n){return String(n).padStart(2,'0')};return d.getFullYear()+'-'+p(d.getMonth()+1)+'-'+p(d.getDate())}
+  function fmt(s){var a=s.split('-');return a[2]+'/'+a[1]+'/'+a[0]}
+  function loadWords(){return dbReady.then(function(){
+    if(DB)return col().get().then(function(s){return s.docs.map(function(x){return x.data()})});
+    return lsGet()}).catch(function(){return lsGet()})}
+  function saveWord(d,w){
+    var p=(d.pos||[])[0];if(!p||!p.meaning_en||!w)return;
+    var e={word:w,ipa:d.ipa||'',def_en:p.meaning_en,def_vi:p.meaning_vi||'',tag:p.tag||'N',date:today(),ts:Date.now()};
+    var id=w.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');if(!id)return;
+    dbReady.then(function(){
+      if(DB)return col().doc(id).set(e);
+      var a=lsGet().filter(function(x){return x.word.toLowerCase()!==w.toLowerCase()});a.push(e);
+      try{localStorage.setItem(LS,JSON.stringify(a))}catch(x){}
+    }).catch(function(){});
+  }
+  function shuffle(a){a=a.slice();for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1)),t=a[i];a[i]=a[j];a[j]=t}return a}
+  function mask(def,w){var pre=w.length>4?w.slice(0,w.length-2):w;return def.replace(new RegExp(pre.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+'\\w*','gi'),'_____')}
+
+  function showTab(t){
+    $('viewLookup').classList.toggle('hide',t!=='L');view.classList.toggle('hide',t!=='R');
+    $('tabL').classList.toggle('on',t==='L');$('tabR').classList.toggle('on',t==='R');
+    if(t==='R')renderReview();
+  }
+  $('tabL').onclick=function(){showTab('L')};$('tabR').onclick=function(){showTab('R')};
+
+  function renderReview(selDate){
+    view.textContent='';
+    var c=el('div','card');c.appendChild(ttl('calendar|Chọn ngày để ôn tập'));view.appendChild(c);
+    c.appendChild(el('div','vi','Đang tải từ đã lưu…'));
+    loadWords().then(function(words){
+      c.lastChild.remove();
+      if(!words.length){c.appendChild(el('div','vi','Bạn chưa tra từ nào. Hãy tra vài từ trước, Engdaily sẽ tự lưu theo ngày nhé!'));return}
+      var by={};words.forEach(function(x){(by[x.date]=by[x.date]||[]).push(x)});
+      var days=Object.keys(by).sort().reverse();
+      days.forEach(function(dt){
+        var b=el('button','day'+(dt===selDate?' on':''),fmt(dt)+' · '+by[dt].length+' từ');
+        b.onclick=function(){renderReview(dt)};c.appendChild(b);
+      });
+      if(selDate&&by[selDate]){
+        var s=el('div','card');s.appendChild(el('span','stage','Giai đoạn 1'));
+        s.appendChild(ttl('eye|Nhìn định nghĩa TA → Chọn từ TA'));
+        s.appendChild(el('div','vi','Ngày '+fmt(selDate)+': '+by[selDate].length+' từ. Bạn sẽ nghe và đọc định nghĩa tiếng Anh, rồi chọn đúng từ trong 4 phương án.'));
+        var st=el('button',null,'Bắt đầu');st.style.marginTop='12px';
+        st.onclick=function(){startQuiz(shuffle(by[selDate]),words,selDate,1)};s.appendChild(st);view.appendChild(s);
+        var s2c=el('div','card');s2c.appendChild(el('span','stage','Giai đoạn 2'));
+        s2c.appendChild(ttl('ear|Nghe định nghĩa TA → Chọn từ TA'));
+        s2c.appendChild(el('div','vi','Nghe phát âm của 4 lựa chọn (mặt chữ được ẩn), chọn từ đúng rồi bấm Kiểm tra để xem chữ.'));
+        var st2=el('button',null,'Bắt đầu');st2.style.marginTop='12px';
+        st2.onclick=function(){startQuiz(shuffle(by[selDate]),words,selDate,2)};s2c.appendChild(st2);view.appendChild(s2c);
+      }
+    });
+  }
+
+  function getOptions(item,all){
+    var seen={},others=all.filter(function(x){var k=x.word.toLowerCase();if(k===item.word.toLowerCase()||seen[k])return false;seen[k]=1;return true});
+    others=shuffle(others);
+    var same=others.filter(function(x){return x.tag===item.tag}),rest=others.filter(function(x){return x.tag!==item.tag});
+    var d=same.concat(rest).slice(0,3).map(function(x){return x.word});
+    if(d.length>=3||!sample)return Promise.resolve(d);
+    return sample.json('Give '+(3-d.length)+' English words that are plausible but WRONG answers for a vocabulary quiz whose correct answer is "'+item.word+'" (definition: '+item.def_en+'). Same part of speech, similar level, not synonyms. Return ONLY a JSON array of strings.').then(function(a){
+      return d.concat((Array.isArray(a)?a:[]).filter(function(x){return typeof x==='string'&&x.toLowerCase()!==item.word.toLowerCase()}).slice(0,3-d.length))}).catch(function(){return d});
+  }
+
+  function startQuiz(items,all,dt,stg){
+    stg=stg||1;var i=0,score=0;
+    function s2(it,d,c,box){
+      var sel=-1,done=false,rows=[],ws=[],opts=shuffle(d.concat([it.word])),btn=el('button',null,'Kiểm tra');
+      btn.disabled=true;btn.style.marginTop='12px';
+      opts.forEach(function(o,j){
+        var r=el('div','opt row2'),w=el('span','hide',o),m=sbtn('mini');
+        r.appendChild(el('span','ol','ABCD'[j]));m.title='Nghe '+'ABCD'[j];
+        m.onclick=function(e){e.stopPropagation();speak(o)};
+        r.appendChild(m);r.appendChild(w);ws.push(w);rows.push(r);
+        r.onclick=function(){if(done)return;sel=j;rows.forEach(function(x,k){x.classList.toggle('sel',k===j)});btn.disabled=false};
+        box.appendChild(r);
+      });
+      btn.onclick=function(){
+        if(done)return;done=true;btn.remove();
+        var ok=opts[sel]===it.word;if(ok)score++;
+        rows.forEach(function(r,k){r.classList.remove('sel');if(opts[k]===it.word)r.classList.add('ok');else if(k===sel)r.classList.add('bad');ws[k].classList.remove('hide')});
+        speak(it.word);
+        var f=el('div','item'+(ok?' ctx':''));f.appendChild(el('b',null,(ok?'Chính xác! ':'Chưa đúng. ')+it.word+' '+(it.ipa||'')));
+        if(it.def_vi)f.appendChild(el('div','vi',it.def_vi));
+        var nb=el('button',null,i+1>=items.length?'Xem kết quả':'Tiếp tục');nb.style.marginTop='10px';
+        nb.onclick=function(){i++;next()};f.appendChild(nb);c.appendChild(f);
+      };
+      c.appendChild(btn);
+    }
+    function next(){
+      view.textContent='';
+      if(i>=items.length){
+        var r=el('div','card');r.style.textAlign='center';var tr=ic('trophy');tr.classList.add('bigic');r.appendChild(tr);r.appendChild(el('div','big',score+' / '+items.length));
+        r.appendChild(el('div',null,score===items.length?'Tuyệt vời! Bạn nhớ hết rồi!':'Cố lên, ôn thêm lần nữa nhé!'));
+        var again=el('button',null,'Làm lại');again.style.margin='14px 8px 0 0';again.onclick=function(){startQuiz(shuffle(items),all,dt,stg)};
+        var back=el('button','day','Chọn ngày khác');back.onclick=function(){renderReview(dt)};
+        var sw=el('button',null,stg===1?'Sang giai đoạn 2':'Ôn lại giai đoạn 1');sw.style.margin='14px 8px 0 0';sw.onclick=function(){startQuiz(shuffle(items),all,dt,stg===1?2:1)};
+        r.appendChild(sw);r.appendChild(again);r.appendChild(back);view.appendChild(r);return}
+      var it=items[i];
+      var c=el('div','card');c.appendChild(el('span','stage','Giai đoạn '+stg+' · Câu '+(i+1)+'/'+items.length));
+      var bar=el('div','bar'),fill=el('i');fill.style.width=(i/items.length*100)+'%';bar.appendChild(fill);c.appendChild(bar);
+      var h=el('div','hero');h.appendChild(el('span','badge '+(it.tag||'N'),it.tag||'N'));
+      var spk=sbtn('spk');spk.onclick=function(){speak(it.def_en)};h.appendChild(spk);c.appendChild(h);
+      c.appendChild(el('div','def',mask(it.def_en,it.word)));
+      var box=el('div','opts');c.appendChild(box);view.appendChild(c);
+      speak(it.def_en);
+      box.appendChild(el('div','vi','Đang chuẩn bị đáp án…'));
+      getOptions(it,all).then(function(d){
+        box.textContent='';
+        if(stg===2){s2(it,d,c,box);return}
+        var done=false;
+        shuffle(d.concat([it.word])).forEach(function(o){
+          var b=el('button','opt',o);
+          b.onclick=function(){
+            if(done)return;done=true;
+            var ok=o===it.word;if(ok)score++;
+            b.classList.add(ok?'ok':'bad');
+            Array.prototype.forEach.call(box.children,function(x){if(x.textContent===it.word)x.classList.add('ok')});
+            speak(it.word);
+            var f=el('div','item'+(ok?' ctx':''));f.appendChild(el('b',null,(ok?'Chính xác! ':'Chưa đúng. ')+it.word+' '+(it.ipa||'')));
+            if(it.def_vi)f.appendChild(el('div','vi',it.def_vi));
+            var nb=el('button',null,i+1>=items.length?'Xem kết quả':'Tiếp tục');nb.style.marginTop='10px';
+            nb.onclick=function(){i++;next()};f.appendChild(nb);c.appendChild(f);
+          };
+          box.appendChild(b);
+        });
+      });
+    }
+    next();
+  }
+
+  go.onclick=search;
+  q.addEventListener('keydown',function(e){if(e.key==='Enter')search()});
+})();
+</script>
+</body>
+</html>
